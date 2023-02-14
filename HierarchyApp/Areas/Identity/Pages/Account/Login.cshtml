@@ -1,0 +1,48 @@
+﻿@page
+@model LoginModel
+
+@{
+    Layout = "~/Areas/Identity/Pages/Account/_LoginLayout.cshtml";
+}
+
+
+<div class="col-md-10 offset-md-1 text-center">
+        <section>
+        <div class="login-form-icon fa-9x text-secondary">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="m-2 ">
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating m-2  ">
+                    <input asp-for="Input.Email" class="form-control"  />
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating m-2 ">
+                    <input asp-for="Input.Password" class="form-control" />
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div>
+                    <div class="checkbox">
+                        <label asp-for="Input.RememberMe" class="form-label">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="w-50 btn btn-primary">Log in</button>
+                </div>
+
+            </form>
+        </div>
+        </section>
+    </div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

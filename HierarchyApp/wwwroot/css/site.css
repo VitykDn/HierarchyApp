@@ -1,0 +1,44 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+div.login-logout-tab div.card-header{
+    padding: 0 0 12px 0;
+}
+div.login-logout-tab ul.nav-tabs {
+    margin: 0 0 -12px 0;
+}
+div.login-logout-tab li.nav-item {
+    margin-right: 0;
+    width: 50%;
+}
+div.login-logout-tab a.nav-link {
+    text-align:center;
+    font-size:1.2rem;
+}
+.widget {
+    border-radius: 1rem;
+    background-color: #f7f7f9;
+}
+
+    .widget.summary > div:first-child {
+        background-color: #f7f7f9;
+        padding: 1rem;
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+    }
