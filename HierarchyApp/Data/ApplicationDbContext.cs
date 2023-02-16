@@ -11,5 +11,6 @@ namespace HierarchyApp.Data
         {
         }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<CompanyPosition> CompanyPositions { get; set; }
     }
 }
