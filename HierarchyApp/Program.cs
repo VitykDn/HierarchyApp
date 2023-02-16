@@ -47,5 +47,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
+//Data to Populate Position
+//var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//SeedData.SeedDatabase(context);
 app.Run();

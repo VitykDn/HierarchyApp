@@ -16,6 +16,7 @@ namespace HierarchyApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+
         public EmployeesController(ApplicationDbContext context, IWebHostEnvironment webHostEnviroment)
         {
             _webHostEnvironment = webHostEnviroment;
@@ -49,6 +50,8 @@ namespace HierarchyApp.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
+            ViewBag.positionData = GetPositions();
+            ViewBag.employeeData = GetEmployees();
             return View();
         }
 
@@ -172,6 +175,16 @@ namespace HierarchyApp.Controllers
         private bool EmployeeExists(int id)
         {
           return _context.Employees.Any(e => e.EmployeeId == id);
+        }
+        private List<Employee> GetEmployees()
+        {
+            List<Employee> employees = _context.Employees.ToList();
+            return employees;
+        }
+        private List<CompanyPosition> GetPositions()
+        {
+            List<CompanyPosition> positions = _context.CompanyPositions.ToList();
+            return positions;
         }
     }
 }
