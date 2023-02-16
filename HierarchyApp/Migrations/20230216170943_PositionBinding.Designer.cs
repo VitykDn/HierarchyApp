@@ -4,6 +4,7 @@ using HierarchyApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HierarchyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230216170943_PositionBinding")]
+    partial class PositionBinding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +53,7 @@ namespace HierarchyApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("CompanyPositionId")
+                    b.Property<int?>("CompanyPositionId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullName")
@@ -63,6 +65,7 @@ namespace HierarchyApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Salary")
@@ -283,10 +286,8 @@ namespace HierarchyApp.Migrations
             modelBuilder.Entity("HierarchyApp.Models.Employee", b =>
                 {
                     b.HasOne("HierarchyApp.Models.CompanyPosition", "CompanyPosition")
-                        .WithMany()
-                        .HasForeignKey("CompanyPositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyPositionId");
 
                     b.Navigation("CompanyPosition");
                 });
@@ -340,6 +341,11 @@ namespace HierarchyApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HierarchyApp.Models.CompanyPosition", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

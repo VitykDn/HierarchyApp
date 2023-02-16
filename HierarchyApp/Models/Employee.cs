@@ -12,10 +12,12 @@ namespace HierarchyApp.Models
         public int EmployeeId { get; set; }
         [Column(TypeName = "nvarchar(50)")]
         public int BossId { get; set; }
+        public int CompanyPositionId { get; set; }
+        public CompanyPosition? CompanyPosition { get; set; }
         public string FullName { get; set; }
         public DateTime StartDate { get; set; }
         public decimal Salary { get; set; }
-        public string Position { get; set; }
+        public string? Position { get; set; }
         public string Image { get; set; } = "noimage.png";
         [NotMapped]
         [FileExtension]

@@ -60,10 +60,13 @@ namespace HierarchyApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Employee employee)
+        public async Task<IActionResult> Create(/*[Bind("EmployeeId,BossId,CompanyPositionID,Salary,StartDate,FullName,ImageUpload")]*/ Employee employee)
         {
             if (ModelState.IsValid)
             {
+                var position = await _context.CompanyPositions.FirstAsync(c => c.CompanyPositionId == employee.CompanyPositionId);
+                employee.CompanyPosition = position;
+                var positionTes = await _context.Employees.FirstAsync( c => c.FullName == "Bro");
                 if (employee.ImageUpload != null)
                 {
                     string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");

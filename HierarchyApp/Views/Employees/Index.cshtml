@@ -9,45 +9,22 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Salary)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Position)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Salary)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Position)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
+<div class="col-md-12">
+    <ejs-grid id="transactions" dataSource="@Model"
+              allowSorting="true" allowPaging="true" gridLines="None">
+        <e-grid-columns>
+            <e-grid-column headerText="Full Name" field="FullName"></e-grid-column>
+            <e-grid-column headerText="Position" field="CompanyPosition.PositionName"></e-grid-column>
+            <e-grid-column headerText="Salary" field="Salary"
+                           textAlign=Left width="210px"></e-grid-column>
+            <e-grid-column headerText="Start Date" field="StartDate" width="210px"
+                           format="dd-mmm-yy" textAlign=Left></e-grid-column>
+            @*<e-grid-column headerText="Action" template="#actionColumnTemplate" width="120px"></e-grid-column>*@
+        </e-grid-columns>
+    </ejs-grid>
+</div>
+@*<td>
                 <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.EmployeeId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            </td>*@
