@@ -1,8 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+﻿
+    <div class="col-md-10">
+    <ejs-treegrid id="TreeGrid" dataSource="@ViewBag.EmployeeData" idMapping="EmployeeId" parentIdMapping='BossId' allowPaging="true" treeColumnIndex="1">
+        <e-treegrid-columns>
+                <e-treegrid-column field="EmployeeId" headerText="ID" textAlign="Right" width="50"></e-treegrid-column>
+            <e-treegrid-column field="FullName" headerText="Full Name" width="90"></e-treegrid-column>
+            <e-treegrid-column field="Position" headerText="Position" textAlign="Right" width="80"></e-treegrid-column>
+            <e-treegrid-column field="StartDate" headerText=" Start Date" textAlign="Right"
+                           format="yMd" type="date" width="90"></e-treegrid-column>
+        </e-treegrid-columns>
+    </ejs-treegrid>
+    </div>

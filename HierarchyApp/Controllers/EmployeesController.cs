@@ -60,13 +60,12 @@ namespace HierarchyApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(/*[Bind("EmployeeId,BossId,CompanyPositionID,Salary,StartDate,FullName,ImageUpload")]*/ Employee employee)
+        public async Task<IActionResult> Create(Employee employee)
         {
             if (ModelState.IsValid)
             {
                 var position = await _context.CompanyPositions.FirstAsync(c => c.CompanyPositionId == employee.CompanyPositionId);
-                employee.CompanyPosition = position;
-                var positionTes = await _context.Employees.FirstAsync( c => c.FullName == "Bro");
+                employee.Position = position.PositionName;
                 if (employee.ImageUpload != null)
                 {
                     string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
@@ -90,6 +89,8 @@ namespace HierarchyApp.Controllers
         // GET: Employees/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.positionData = GetPositions();
+            ViewBag.employeeData = GetEmployees();
             if (id == null || _context.Employees == null)
             {
                 return NotFound();
@@ -108,7 +109,7 @@ namespace HierarchyApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EmployeeId,StartDate,Salary,Position,FullName")] Employee employee)
+        public async Task<IActionResult> Edit(int id, Employee employee)
         {
             if (id != employee.EmployeeId)
             {
@@ -117,6 +118,21 @@ namespace HierarchyApp.Controllers
 
             if (ModelState.IsValid)
             {
+                var position = await _context.CompanyPositions.FirstAsync(c => c.CompanyPositionId == employee.CompanyPositionId);
+                employee.Position = position.PositionName;
+                if (employee.ImageUpload != null)
+                {
+                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
+                    string imageName = Guid.NewGuid().ToString() + "_" + employee.ImageUpload.FileName;
+
+                    string filePath = Path.Combine(uploadsDir, imageName);
+
+                    FileStream fs = new FileStream(filePath, FileMode.Create);
+                    await employee.ImageUpload.CopyToAsync(fs);
+                    fs.Close();
+
+                    employee.Image = imageName;
+                }
                 try
                 {
                     _context.Update(employee);
@@ -138,23 +154,23 @@ namespace HierarchyApp.Controllers
             return View(employee);
         }
 
-        // GET: Employees/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Employees == null)
-            {
-                return NotFound();
-            }
+        //// GET: Employees/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null || _context.Employees == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+        //    var employee = await _context.Employees
+        //        .FirstOrDefaultAsync(m => m.EmployeeId == id);
+        //    if (employee == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(employee);
-        }
+        //    return View(employee);
+        //}
 
         // POST: Employees/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -184,7 +200,7 @@ namespace HierarchyApp.Controllers
             List<Employee> employees = _context.Employees.ToList();
             return employees;
         }
-        private List<CompanyPosition> GetPositions()
+        private List<CompanyPosition> GetPositions(int = 0)
         {
             List<CompanyPosition> positions = _context.CompanyPositions.ToList();
             return positions;

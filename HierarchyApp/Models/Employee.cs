@@ -11,7 +11,7 @@ namespace HierarchyApp.Models
         [Key]
         public int EmployeeId { get; set; }
         [Column(TypeName = "nvarchar(50)")]
-        public int BossId { get; set; }
+        public int? BossId { get; set; }
         public int CompanyPositionId { get; set; }
         public CompanyPosition? CompanyPosition { get; set; }
         public string FullName { get; set; }

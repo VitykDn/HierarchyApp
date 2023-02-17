@@ -14,15 +14,31 @@
               allowSorting="true" allowPaging="true" gridLines="None">
         <e-grid-columns>
             <e-grid-column headerText="Full Name" field="FullName"></e-grid-column>
-            <e-grid-column headerText="Position" field="CompanyPosition.PositionName"></e-grid-column>
+            <e-grid-column headerText="Position" field="Position"></e-grid-column>
             <e-grid-column headerText="Salary" field="Salary"
                            textAlign=Left width="210px"></e-grid-column>
             <e-grid-column headerText="Start Date" field="StartDate" width="210px"
                            format="dd-mmm-yy" textAlign=Left></e-grid-column>
-            @*<e-grid-column headerText="Action" template="#actionColumnTemplate" width="120px"></e-grid-column>*@
+            <e-grid-column headerText="Action" template="#actionColumnTemplate" width="120px"></e-grid-column>
         </e-grid-columns>
     </ejs-grid>
 </div>
+
+<script id="actionColumnTemplate" type="text/x-template">
+    <div class="d-flex flex-row justify-content-start ">
+        <a class="btn btn-sm no-a-decoration" href="Employees/Edit/${EmployeeId}">
+            <i class="fa-solid fa-pen  fa-lg"></i>
+        </a>
+        <form action="Employees/Delete/${EmployeeId}" method="post">
+    @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-link btn-sm no-a-decoration"
+        onclick="return confirm(&quot;Are sure to delete this record?&quot;)">
+            <i class="fa-solid fa-trash-can text-danger fa-lg"></i>
+        </button>
+    </form>
+    </div>
+
+</script>
 @*<td>
                 <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> |
