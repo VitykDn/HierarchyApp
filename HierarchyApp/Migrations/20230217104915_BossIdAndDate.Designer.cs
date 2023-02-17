@@ -4,6 +4,7 @@ using HierarchyApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HierarchyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230217104915_BossIdAndDate")]
+    partial class BossIdAndDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +52,7 @@ namespace HierarchyApp.Migrations
                     b.Property<string>("BossId")
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("CompanyPositionId")
+                    b.Property<int>("CompanyPositionId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullName")
@@ -283,7 +285,9 @@ namespace HierarchyApp.Migrations
                 {
                     b.HasOne("HierarchyApp.Models.CompanyPosition", "CompanyPosition")
                         .WithMany()
-                        .HasForeignKey("CompanyPositionId");
+                        .HasForeignKey("CompanyPositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CompanyPosition");
                 });

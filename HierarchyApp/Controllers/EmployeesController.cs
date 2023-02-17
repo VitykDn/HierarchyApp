@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HierarchyApp.Data;
+﻿using HierarchyApp.Data;
 using HierarchyApp.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HierarchyApp.Controllers
 {
@@ -15,7 +9,6 @@ namespace HierarchyApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
 
         public EmployeesController(ApplicationDbContext context, IWebHostEnvironment webHostEnviroment)
         {
@@ -26,7 +19,7 @@ namespace HierarchyApp.Controllers
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Employees.ToListAsync());
+            return View(await _context.Employees.ToListAsync());
         }
 
         // GET: Employees/Details/5
@@ -90,7 +83,7 @@ namespace HierarchyApp.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             ViewBag.positionData = GetPositions();
-            ViewBag.employeeData = GetEmployees();
+            ViewBag.employeeData = GetEmployees(id);
             if (id == null || _context.Employees == null)
             {
                 return NotFound();
@@ -111,10 +104,13 @@ namespace HierarchyApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Employee employee)
         {
+            ViewBag.positionData = GetPositions();
+            ViewBag.employeeData = GetEmployees(id);
             if (id != employee.EmployeeId)
             {
                 return NotFound();
             }
+
 
             if (ModelState.IsValid)
             {
@@ -184,6 +180,15 @@ namespace HierarchyApp.Controllers
             var employee = await _context.Employees.FindAsync(id);
             if (employee != null)
             {
+                if (!string.Equals(employee.Image, "noimage.png"))
+                {
+                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
+                    string oldImagePath = Path.Combine(uploadsDir, employee.Image);
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
                 _context.Employees.Remove(employee);
             }
 
@@ -193,17 +198,20 @@ namespace HierarchyApp.Controllers
 
         private bool EmployeeExists(int id)
         {
-          return _context.Employees.Any(e => e.EmployeeId == id);
+            return _context.Employees.Any(e => e.EmployeeId == id);
         }
-        private List<Employee> GetEmployees()
+
+        private List<Employee> GetEmployees(int? id = 0)
         {
-            List<Employee> employees = _context.Employees.ToList();
-            return employees;
+            if (id != 0)
+                return _context.Employees.Where(e => e.EmployeeId != id).ToList();
+            else
+                return _context.Employees.ToList();
         }
-        private List<CompanyPosition> GetPositions(int = 0)
+
+        private List<CompanyPosition> GetPositions(int id = 0)
         {
-            List<CompanyPosition> positions = _context.CompanyPositions.ToList();
-            return positions;
+            return _context.CompanyPositions.ToList();
         }
     }
 }

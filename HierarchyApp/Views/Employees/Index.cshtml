@@ -11,8 +11,10 @@
 </p>
 <div class="col-md-12">
     <ejs-grid id="transactions" dataSource="@Model"
-              allowSorting="true" allowPaging="true" gridLines="None">
+              allowSorting="true" allowPaging="false" allowFiltering="true" gridLines="Vertical">
+        <e-grid-filterSettings type="Menu"></e-grid-filterSettings>
         <e-grid-columns>
+            <e-grid-column headerText="Image" template="#template" textAlign="Center" width="150"></e-grid-column>
             <e-grid-column headerText="Full Name" field="FullName"></e-grid-column>
             <e-grid-column headerText="Position" field="Position"></e-grid-column>
             <e-grid-column headerText="Salary" field="Salary"
@@ -39,8 +41,17 @@
     </div>
 
 </script>
-@*<td>
-                <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EmployeeId">Delete</a>
-            </td>*@
+<script id="template" type="text/x-template">
+    <div class="image">
+        <img src="/media/images/${Image}" alt="${EmployeeImage}" />
+    </div>
+</script>
+
+<style>
+    .image img {
+        height: 55px;
+        width: 55px;
+        border-radius: 50px;
+        box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+</style>
