@@ -1,4 +1,5 @@
 ﻿using HierarchyApp.Data;
+using HierarchyApp.Data.Implementation;
 using HierarchyApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,44 +8,42 @@ namespace HierarchyApp.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICompanyPositionRepository _companyPositionRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EmployeesController(ApplicationDbContext context, IWebHostEnvironment webHostEnviroment)
+        public EmployeesController(ICompanyPositionRepository companyPositionRepository,
+            IEmployeeRepository employeeRepository, IWebHostEnvironment webHostEnviroment)
         {
             _webHostEnvironment = webHostEnviroment;
-            _context = context;
+            _companyPositionRepository = companyPositionRepository;
+            _employeeRepository = employeeRepository;
         }
 
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Employees.ToListAsync());
+            var employees = await _employeeRepository.GetAllAsync();
+            return View(employees);
         }
 
         // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Employees == null)
+            if (id == null)
             {
-                return NotFound();
+                throw new ArgumentException("Employee not exist");
             }
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeRepository.GetById(id);
 
             return View(employee);
         }
 
         // GET: Employees/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.positionData = GetPositions();
-            ViewBag.employeeData = GetEmployees();
+            ViewBag.positionData = await GetPositions();
+            ViewBag.employeeData = await GetEmployees();
             return View();
         }
 
@@ -57,49 +56,30 @@ namespace HierarchyApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var position = await _context.CompanyPositions.FirstAsync(c => c.CompanyPositionId == employee.CompanyPositionId);
-                employee.Position = position.PositionName;
-                if (employee.ImageUpload != null)
-                {
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
-                    string imageName = Guid.NewGuid().ToString() + "_" + employee.ImageUpload.FileName;
-
-                    string filePath = Path.Combine(uploadsDir, imageName);
-
-                    FileStream fs = new FileStream(filePath, FileMode.Create);
-                    await employee.ImageUpload.CopyToAsync(fs);
-                    fs.Close();
-
-                    employee.Image = imageName;
-                }
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
+                await _employeeRepository.Creat(employee);
                 return RedirectToAction(nameof(Index));
             }
+            //ViewBag.positionData = GetPositions();
+            //ViewBag.employeeData = GetEmployees();
             return View(employee);
         }
 
         // GET: Employees/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            ViewBag.positionData = GetPositions();
-            ViewBag.employeeData = GetEmployees(id);
-            if (id == null || _context.Employees == null)
+            var listEmployee = await GetEmployees(id);
+            ViewBag.positionData = await GetPositions();
+            ViewBag.employeeData = listEmployee;
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeRepository.GetById(id);
             return View(employee);
         }
 
         // POST: Employees/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Employee employee)
@@ -114,104 +94,59 @@ namespace HierarchyApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var position = await _context.CompanyPositions.FirstAsync(c => c.CompanyPositionId == employee.CompanyPositionId);
-                employee.Position = position.PositionName;
-                if (employee.ImageUpload != null)
-                {
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
-                    string imageName = Guid.NewGuid().ToString() + "_" + employee.ImageUpload.FileName;
-
-                    string filePath = Path.Combine(uploadsDir, imageName);
-
-                    FileStream fs = new FileStream(filePath, FileMode.Create);
-                    await employee.ImageUpload.CopyToAsync(fs);
-                    fs.Close();
-
-                    employee.Image = imageName;
-                }
-                try
-                {
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.EmployeeId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    await _employeeRepository.Update(id, employee);
+                    return RedirectToAction(nameof(Index));
             }
             return View(employee);
         }
-
-        //// GET: Employees/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Employees == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var employee = await _context.Employees
-        //        .FirstOrDefaultAsync(m => m.EmployeeId == id);
-        //    if (employee == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(employee);
-        //}
 
         // POST: Employees/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Employees == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Employees'  is null.");
-            }
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee != null)
-            {
-                if (!string.Equals(employee.Image, "noimage.png"))
-                {
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
-                    string oldImagePath = Path.Combine(uploadsDir, employee.Image);
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-                }
-                _context.Employees.Remove(employee);
-            }
+            ////if (_context.Employees == null)
+            ////{
+            ////    return Problem("Entity set 'ApplicationDbContext.Employees'  is null.");
+            ////}
+            ////var employee = await _context.Employees.FindAsync(id);
+            //if (employee != null)
+            //{
+            //    if (!string.Equals(employee.Image, "noimage.png"))
+            //    {
+            //        string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
+            //        string oldImagePath = Path.Combine(uploadsDir, employee.Image);
+            //        if (System.IO.File.Exists(oldImagePath))
+            //        {
+            //            System.IO.File.Delete(oldImagePath);
+            //        }
+            //    }
+            //    _context.Employees.Remove(employee);
+            //}
 
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
+            _employeeRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.EmployeeId == id);
-        }
+        //private bool EmployeeExists(int id)
+        //{
+        //    return _employeeRepository.GetById(id);
+        //    //return _context.Employees.Any(e => e.EmployeeId == id);
+        //}
 
-        private List<Employee> GetEmployees(int? id = 0)
+        private  Task<IEnumerable<Employee>> GetEmployees(int? id = 0)
         {
             if (id != 0)
-                return _context.Employees.Where(e => e.EmployeeId != id).ToList();
+                return _employeeRepository.GetAllWithExceptionAsync(id);
             else
-                return _context.Employees.ToList();
+                return _employeeRepository.GetAllAsync();
         }
 
-        private List<CompanyPosition> GetPositions(int id = 0)
+        private Task<IEnumerable<CompanyPosition>> GetPositions()
         {
-            return _context.CompanyPositions.ToList();
+             return _companyPositionRepository.GetAllAsync();
+
         }
     }
 }

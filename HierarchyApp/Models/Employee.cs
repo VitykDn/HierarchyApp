@@ -13,7 +13,7 @@ namespace HierarchyApp.Models
         [Column(TypeName = "nvarchar(50)")]
         public int? BossId { get; set; }
         public int? CompanyPositionId { get; set; }
-        public CompanyPosition? CompanyPosition { get; set; }
+        public Employee? CompanyPosition { get; set; }
         public string FullName { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
@@ -26,10 +26,15 @@ namespace HierarchyApp.Models
         [FileExtension]
         public IFormFile ImageUpload { get; set; }
 
-        //public Employee(int id)
-        //{
-        //    this.EmployeeId = id;
-        //}
+
+        public Employee()
+        {
+
+        }
+        public Employee(int employeeId)
+        {
+            this.EmployeeId = employeeId;
+        }
     }
 
 }

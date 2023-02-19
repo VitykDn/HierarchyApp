@@ -18,16 +18,19 @@ namespace HierarchyApp.Data
             //    Randomizer.Seed = new Random(3897234);
             //    var testObject = new Faker<Employee>()
             //        .CustomInstantiator(f => new Employee(employeeIds))
-            //        .RuleFor(e => e.EmployeeId, f =>employeeIds++)
+            //        .RuleFor(e => e.EmployeeId, f => employeeIds++)
             //        .RuleFor(e => e.FullName, (f, e) => f.Name.FullName())
             //        .RuleFor(e => e.Image, f => f.Internet.Avatar())
-            //        .RuleFor(e => e.Salary, f => f.Random.Decimal(1000,50000))
-            //        .RuleFor(e => e.StartDate, (f,e) => f.Date.Recent(500))
-            //        .RuleFor(e => e.CompanyPosition, f => f.PickRandom(position))
-            //        .RuleFor(e => e.CompanyPositionId, e => e.)
-            //        .
-            //    ; 
-
+            //        .RuleFor(e => e.Salary, f => f.Random.Decimal(1000, 50000))
+            //        .RuleFor(e => e.StartDate, (f, e) => f.Date.Recent(500))
+            //        .RuleFor(e => e.CompanyPosition, (f, e) => f.PickRandom(position);
+            //    ;
+            //    var testList = testObject.Generate(300);
+            //    foreach (var item in testList)
+            //    {
+            //        item.Position = item.CompanyPosition.PositionName;
+            //        item.CompanyPositionId = item.CompanyPosition.CompanyPositionId;
+            //    }
             //}
             public static void SeedDatabase(ApplicationDbContext context)
             {
