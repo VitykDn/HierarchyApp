@@ -125,7 +125,7 @@ namespace HierarchyApp.Controllers
             //}
 
             //await _context.SaveChangesAsync();
-            _employeeRepository.Delete(id);
+            await _employeeRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 

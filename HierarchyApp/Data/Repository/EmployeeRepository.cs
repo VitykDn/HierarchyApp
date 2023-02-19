@@ -40,13 +40,14 @@ namespace HierarchyApp.Data.Repository
                 throw new ArgumentNullException(nameof(id), "Id not specified");
             if (id == null)
                 throw new ArgumentException("Id not exist");
-            var employee = await GetById(id);
-            if (employee == null)
+            var existingEmployee = await GetById(id);
+            if (existingEmployee == null)
                 throw new ArgumentException("Employee does not exist", nameof(id));
-            if (!string.Equals(employee.Image, "noimage.png"))
+
+            if (!string.Equals(existingEmployee.Image, "noimage.png"))
             {
                 string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
-                string oldImagePath = Path.Combine(uploadsDir, employee.Image);
+                string oldImagePath = Path.Combine(uploadsDir, existingEmployee.Image);
                 if (File.Exists(oldImagePath))
                     try
                     {
@@ -57,9 +58,14 @@ namespace HierarchyApp.Data.Repository
                         throw new Exception($"Error deleting file: {ex.Message}");
                     }
             }
-            _context.Employees.Remove(employee);
+            //Deleting this BossId in child nodes
+            //
+            var childNodes = await _context.Employees.Where(e => e.BossId == id).ToListAsync();
+            childNodes.ForEach(e => e.BossId = null);
+
+            _context.Employees.Remove(existingEmployee);
             await _context.SaveChangesAsync();
-            return employee;
+            return existingEmployee;
         }
 
         public async Task<IEnumerable<Employee>> GetAllAsync() => await _context.Employees.ToListAsync();
@@ -68,7 +74,7 @@ namespace HierarchyApp.Data.Repository
 
         public async Task<Employee?> GetById(int? id)
             => id is null ? throw new ArgumentException("Position not exist") : await _context.Employees
-            .FirstOrDefaultAsync(p => p.EmployeeId == id);
+            .SingleOrDefaultAsync(p => p.EmployeeId == id);
 
         public async Task<Employee> Update(int id, Employee employee)
         {
@@ -84,18 +90,19 @@ namespace HierarchyApp.Data.Repository
             {
                 throw new ArgumentException("User not exist");
             }
+            var existingEmployee = await _context.Employees.FindAsync(id);
+            if (existingEmployee == null)
+            {
+                throw new ArgumentException("User not exist");
+            }
 
-            var result = _context.Employees.Update(employee);
+            _context.Entry(existingEmployee).CurrentValues.SetValues(employee);
             await _context.SaveChangesAsync();
-            return result.Entity;
+
+            return existingEmployee;
         }
 
-        /// <summary>
-        /// Adding Image To Emoloyee
-        /// Badly Written
-        /// </summary>
-        /// <param name="employee"></param>
-        /// <returns></returns>
+
         private async Task<string> AddImage(IFormFile imageUpload)
         {
             string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
