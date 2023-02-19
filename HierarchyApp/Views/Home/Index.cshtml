@@ -1,6 +1,9 @@
 ﻿
     <div class="col-md-12">
-    <ejs-treegrid id="TreeGrid" dataSource="@ViewBag.EmployeeData" idMapping="EmployeeId" parentIdMapping='BossId' allowPaging="true" treeColumnIndex="1">
+    <ejs-treegrid id="TreeGrid" dataSource="@ViewBag.EmployeeData" allowRowDragAndDrop="true"
+                  enableInfiniteScrolling="true" idMapping="EmployeeId" RowDragEnd="OnRowDragEnd"
+                  parentIdMapping='BossId' allowPaging="false" treeColumnIndex="1">
+        <e-treegrid-loadingIndicator indicatorType="Shimmer"></e-treegrid-loadingIndicator>
         <e-treegrid-columns>
                 <e-treegrid-column field="EmployeeId" headerText="ID" textAlign="Right" width="50"></e-treegrid-column>
             <e-treegrid-column field="FullName" headerText="Full Name" width="90"></e-treegrid-column>
@@ -10,3 +13,22 @@
         </e-treegrid-columns>
     </ejs-treegrid>
     </div>
+    <script>
+    function onRowDragEnd(args) {
+        var draggedRow = args.data[0];
+        var newParentId = draggedRow.BossId;
+        var draggedRowId = draggedRow.EmployeeId;
+
+        // update the dragged row's BossId in the database
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/Employees/Update', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        var data = JSON.stringify({ 'employeeId': draggedRowId, 'newBossId': newParentId });
+        xhr.send(data);
+    }
+    </script>

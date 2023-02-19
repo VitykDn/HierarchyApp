@@ -52,6 +52,7 @@ app.MapControllerRoute(
 app.MapRazorPages();
 //Data to Populate Position
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//SeedData.CreateSeedData(context);
-//SeedData.SeedDatabase(context);
+//SeedData.CreatePositions(context);
+//SeedData.CreateEmployees(context);
+//SeedData.CreateHierarchy(context);
 app.Run();

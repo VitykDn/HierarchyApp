@@ -105,26 +105,6 @@ namespace HierarchyApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            ////if (_context.Employees == null)
-            ////{
-            ////    return Problem("Entity set 'ApplicationDbContext.Employees'  is null.");
-            ////}
-            ////var employee = await _context.Employees.FindAsync(id);
-            //if (employee != null)
-            //{
-            //    if (!string.Equals(employee.Image, "noimage.png"))
-            //    {
-            //        string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/products");
-            //        string oldImagePath = Path.Combine(uploadsDir, employee.Image);
-            //        if (System.IO.File.Exists(oldImagePath))
-            //        {
-            //            System.IO.File.Delete(oldImagePath);
-            //        }
-            //    }
-            //    _context.Employees.Remove(employee);
-            //}
-
-            //await _context.SaveChangesAsync();
             await _employeeRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
