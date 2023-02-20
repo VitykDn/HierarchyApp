@@ -19,6 +19,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => {
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredUniqueChars = 0;
     options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength= 0;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
@@ -52,7 +54,7 @@ app.MapControllerRoute(
 app.MapRazorPages();
 //Data to Populate Position
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//SeedData.CreatePositions(context);
-//SeedData.CreateEmployees(context);
-//SeedData.CreateHierarchy(context);
+SeedData.CreatePositions(context);
+SeedData.CreateEmployees(context, 500);
+SeedData.CreateHierarchy(context);
 app.Run();

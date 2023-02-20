@@ -49,20 +49,19 @@ namespace HierarchyApp.Data
                     }
                 }
             }
-            public static void CreateEmployees(ApplicationDbContext context)
+            public static void CreateEmployees(ApplicationDbContext context,int empoyeesNumber)
             {
                 int employeeIds = 0;
                 var position = context.CompanyPositions.ToList();
                 var testObject = new Faker<Employee>()
                     .CustomInstantiator(f => new Employee(employeeIds))
-                   // .RuleFor(e => e.EmployeeId, f => employeeIds++)
                     .RuleFor(e => e.FullName, (f, e) => f.Name.FullName())
-                    .RuleFor(e => e.Image, f => f.Internet.Avatar())
+                    .RuleFor(e => e.Image, f => "user-icon.png")
                     .RuleFor(e => e.Salary, f => f.Random.Decimal(1000, 50000))
                     .RuleFor(e => e.StartDate, (f, e) => f.Date.Recent(500))
                     .RuleFor(e => e.CompanyPosition, (f, e) => f.PickRandom(position))
                     ;
-                var testList = testObject.Generate(300);
+                var testList = testObject.Generate(empoyeesNumber);
                 var employeeList = testList;
                 Faker fak = new Faker();
                 foreach (var item in testList)
@@ -85,7 +84,7 @@ namespace HierarchyApp.Data
                             new CompanyPosition() { PositionName = "CIO" },
                             new CompanyPosition() { PositionName = "Regional Manager" },
                             new CompanyPosition() { PositionName = "Manager" },
-                            new CompanyPosition() { PositionName = "Developer," },
+                            new CompanyPosition() { PositionName = "Developer" },
                             new CompanyPosition() { PositionName = "Tester" },
                             new CompanyPosition() { PositionName = "That Guy" },
                             new CompanyPosition() { PositionName = "Jeff" }

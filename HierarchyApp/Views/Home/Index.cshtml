@@ -1,9 +1,10 @@
 ﻿
-    <div class="col-md-12">
+<div class="col-md-12" style="height: 600px">
     <ejs-treegrid id="TreeGrid" dataSource="@ViewBag.EmployeeData" allowRowDragAndDrop="true"
-                  enableInfiniteScrolling="true" idMapping="EmployeeId" RowDragEnd="OnRowDragEnd"
+                  enableInfiniteScrolling="true" idMapping="EmployeeId" height="100%" allowFiltering="true"
                   parentIdMapping='BossId' allowPaging="false" treeColumnIndex="1">
-        <e-treegrid-loadingIndicator indicatorType="Shimmer"></e-treegrid-loadingIndicator>
+        <e-treegrid-loadingIndicator indicatorType="Spinner"></e-treegrid-loadingIndicator>
+        <e-treegrid-filterSettings type="Menu"></e-treegrid-filterSettings>
         <e-treegrid-columns>
                 <e-treegrid-column field="EmployeeId" headerText="ID" textAlign="Right" width="50"></e-treegrid-column>
             <e-treegrid-column field="FullName" headerText="Full Name" width="90"></e-treegrid-column>
@@ -13,7 +14,9 @@
         </e-treegrid-columns>
     </ejs-treegrid>
     </div>
-    <script>
+
+
+    @*<script>
     function onRowDragEnd(args) {
         var draggedRow = args.data[0];
         var newParentId = draggedRow.BossId;
@@ -31,4 +34,4 @@
         var data = JSON.stringify({ 'employeeId': draggedRowId, 'newBossId': newParentId });
         xhr.send(data);
     }
-    </script>
+    </script>*@

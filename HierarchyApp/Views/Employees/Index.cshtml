@@ -4,14 +4,16 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h2>Employees</h2>
+<div class="ms-6">
+<h1>
+    <a asp-action="Create"><i class="fa-solid fa-user-plus"></i></a>
+</h1>
+</div>
 <div class="col-md-12">
     <ejs-grid id="transactions" dataSource="@Model"
-              allowSorting="true" allowPaging="false" allowFiltering="true" gridLines="Vertical">
+              allowSorting="true" allowPaging="false" allowFiltering="true"
+              enableInfiniteScrolling="true" gridLines="Vertical">
         <e-grid-filterSettings type="Menu"></e-grid-filterSettings>
         <e-grid-columns>
             <e-grid-column headerText="Image" template="#template" textAlign="Center" width="150"></e-grid-column>

@@ -1,6 +1,7 @@
 ﻿using HierarchyApp.Data;
 using HierarchyApp.Data.Implementation;
 using HierarchyApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,7 @@ namespace HierarchyApp.Controllers
         }
 
         // GET: Employees
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var employees = await _employeeRepository.GetAllAsync();
@@ -40,6 +42,7 @@ namespace HierarchyApp.Controllers
         }
 
         // GET: Employees/Create
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             ViewBag.positionData = await GetPositions();
@@ -48,10 +51,9 @@ namespace HierarchyApp.Controllers
         }
 
         // POST: Employees/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(Employee employee)
         {
             if (ModelState.IsValid)
@@ -65,6 +67,7 @@ namespace HierarchyApp.Controllers
         }
 
         // GET: Employees/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             var listEmployee = await GetEmployees(id);
@@ -82,6 +85,7 @@ namespace HierarchyApp.Controllers
         // POST: Employees/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, Employee employee)
         {
             ViewBag.positionData = GetPositions();
@@ -103,18 +107,12 @@ namespace HierarchyApp.Controllers
         // POST: Employees/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _employeeRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
-
-        //private bool EmployeeExists(int id)
-        //{
-        //    return _employeeRepository.GetById(id);
-        //    //return _context.Employees.Any(e => e.EmployeeId == id);
-        //}
-
         private  Task<IEnumerable<Employee>> GetEmployees(int? id = 0)
         {
             if (id != 0)

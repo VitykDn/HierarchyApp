@@ -38,8 +38,6 @@ namespace HierarchyApp.Data.Repository
         {
             if (id == 0)
                 throw new ArgumentNullException(nameof(id), "Id not specified");
-            if (id == null)
-                throw new ArgumentException("Id not exist");
             var existingEmployee = await GetById(id);
             if (existingEmployee == null)
                 throw new ArgumentException("Employee does not exist", nameof(id));
@@ -59,9 +57,12 @@ namespace HierarchyApp.Data.Repository
                     }
             }
             //Deleting this BossId in child nodes
-            //
+            var newBossesId = await _context.Employees
+                .Where(e => e.CompanyPositionId == existingEmployee.CompanyPositionId).Select(e => e.EmployeeId)
+                .ToListAsync();
+            Random random = new Random();
             var childNodes = await _context.Employees.Where(e => e.BossId == id).ToListAsync();
-            childNodes.ForEach(e => e.BossId = null);
+            childNodes.ForEach(e => e.BossId = newBossesId[random.Next(newBossesId.Count)]);
 
             _context.Employees.Remove(existingEmployee);
             await _context.SaveChangesAsync();
