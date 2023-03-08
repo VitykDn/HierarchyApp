@@ -4,38 +4,43 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h2>Create Employee</h2>
 
-<h4>Employee</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Salary" class="control-label"></label>
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Position" class="control-label"></label>
-                <input asp-for="Position" class="form-control" />
-                <span asp-validation-for="Position" class="text-danger"></span>
+            <div class="form-group my-2">
+                <ejs-dropdownlist id="ddlPositions" ejs-for="CompanyPositionId" dataSource="@ViewBag.positionData"
+                placeholder="Select Position" popupHeight="220px">
+                    <e-dropdownlist-fields text="PositionName" value="CompanyPositionId"></e-dropdownlist-fields>
+                </ejs-dropdownlist >
+                <span asp-validation-for="Position" class="text-danger fs-6"></span>
             </div>
+            <div class="form-group my-2">
+                <ejs-dropdownlist id="boss" ejs-for="BossId" dataSource="@ViewBag.employeeData"
+                placeholder="Choose Boss" popupHeight="220px">
+                    <e-dropdownlist-fields text="FullName" value="EmployeeId"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
             <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Image" class="control-label">Image</label>
                 <input asp-for="ImageUpload" class="form-control" />
-
                 <span asp-validation-for="ImageUpload" class="text-danger"></span>
             </div>
             <div class="col">
@@ -48,15 +53,14 @@
             </div>
         </form>
     </div>
-    <div class="col-md-3">
+
+</div>
+<div class="col-md-4">
         <div class=" h-70 d-flex justify-content-center align-items-center">
-            <img src="~/media/images/user-icon.png" id="imgpreview" class="pt-2 w-100 h-100" />
+            <img src="~/media/images/user-icon.png" id="imgpreview" class="pt-2 w-50 h-50" />
         </div>
     </div>
 
-
-    </div>
-</div>
 
 
 @section Scripts {

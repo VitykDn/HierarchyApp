@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HierarchyApp.Data.Migrations
+namespace HierarchyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,6 +22,23 @@ namespace HierarchyApp.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("HierarchyApp.Models.CompanyPosition", b =>
+                {
+                    b.Property<int>("CompanyPositionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyPositionId"), 1L, 1);
+
+                    b.Property<string>("PositionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CompanyPositionId");
+
+                    b.ToTable("CompanyPositions");
+                });
+
             modelBuilder.Entity("HierarchyApp.Models.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
@@ -30,16 +47,21 @@ namespace HierarchyApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"), 1L, 1);
 
+                    b.Property<string>("BossId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("CompanyPositionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Position")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Salary")
@@ -49,6 +71,8 @@ namespace HierarchyApp.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeId");
+
+                    b.HasIndex("CompanyPositionId");
 
                     b.ToTable("Employees");
                 });
@@ -253,6 +277,15 @@ namespace HierarchyApp.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("HierarchyApp.Models.Employee", b =>
+                {
+                    b.HasOne("HierarchyApp.Models.CompanyPosition", "CompanyPosition")
+                        .WithMany()
+                        .HasForeignKey("CompanyPositionId");
+
+                    b.Navigation("CompanyPosition");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -1,177 +1,130 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HierarchyApp.Data;
+﻿using HierarchyApp.Data;
+using HierarchyApp.Data.Implementation;
 using HierarchyApp.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HierarchyApp.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICompanyPositionRepository _companyPositionRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EmployeesController(ApplicationDbContext context, IWebHostEnvironment webHostEnviroment)
+        public EmployeesController(ICompanyPositionRepository companyPositionRepository,
+            IEmployeeRepository employeeRepository, IWebHostEnvironment webHostEnviroment)
         {
             _webHostEnvironment = webHostEnviroment;
-            _context = context;
+            _companyPositionRepository = companyPositionRepository;
+            _employeeRepository = employeeRepository;
         }
 
         // GET: Employees
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Employees.ToListAsync());
+            var employees = await _employeeRepository.GetAllAsync();
+            return View(employees);
         }
 
         // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Employees == null)
+            if (id == null)
             {
-                return NotFound();
+                throw new ArgumentException("Employee not exist");
             }
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeRepository.GetById(id);
 
             return View(employee);
         }
 
         // GET: Employees/Create
-        public IActionResult Create()
+        [Authorize]
+        public async Task<IActionResult> Create()
         {
+            ViewBag.positionData = await GetPositions();
+            ViewBag.employeeData = await GetEmployees();
             return View();
         }
 
         // POST: Employees/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(Employee employee)
         {
             if (ModelState.IsValid)
             {
-                if (employee.ImageUpload != null)
-                {
-                    string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "media/images");
-                    string imageName = Guid.NewGuid().ToString() + "_" + employee.ImageUpload.FileName;
-
-                    string filePath = Path.Combine(uploadsDir, imageName);
-
-                    FileStream fs = new FileStream(filePath, FileMode.Create);
-                    await employee.ImageUpload.CopyToAsync(fs);
-                    fs.Close();
-
-                    employee.Image = imageName;
-                }
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
+                await _employeeRepository.Creat(employee);
                 return RedirectToAction(nameof(Index));
             }
+            //ViewBag.positionData = GetPositions();
+            //ViewBag.employeeData = GetEmployees();
             return View(employee);
         }
 
         // GET: Employees/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Employees == null)
+            var listEmployee = await GetEmployees(id);
+            ViewBag.positionData = await GetPositions();
+            ViewBag.employeeData = listEmployee;
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            var employee = await _employeeRepository.GetById(id);
             return View(employee);
         }
 
         // POST: Employees/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EmployeeId,StartDate,Salary,Position,FullName")] Employee employee)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, Employee employee)
         {
+            ViewBag.positionData = GetPositions();
+            ViewBag.employeeData = GetEmployees(id);
             if (id != employee.EmployeeId)
             {
                 return NotFound();
             }
 
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.EmployeeId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    await _employeeRepository.Update(id, employee);
+                    return RedirectToAction(nameof(Index));
             }
-            return View(employee);
-        }
-
-        // GET: Employees/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Employees == null)
-            {
-                return NotFound();
-            }
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
             return View(employee);
         }
 
         // POST: Employees/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Employees == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Employees'  is null.");
-            }
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee != null)
-            {
-                _context.Employees.Remove(employee);
-            }
-
-            await _context.SaveChangesAsync();
+            await _employeeRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
-
-        private bool EmployeeExists(int id)
+        private  Task<IEnumerable<Employee>> GetEmployees(int? id = 0)
         {
-          return _context.Employees.Any(e => e.EmployeeId == id);
+            if (id != 0)
+                return _employeeRepository.GetAllWithExceptionAsync(id);
+            else
+                return _employeeRepository.GetAllAsync();
+        }
+
+        private Task<IEnumerable<CompanyPosition>> GetPositions()
+        {
+             return _companyPositionRepository.GetAllAsync();
+
         }
     }
 }

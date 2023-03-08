@@ -4,50 +4,56 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h2>Employees</h2>
+<div class="ms-6">
+<h1>
+    <a asp-action="Create"><i class="fa-solid fa-user-plus"></i></a>
+</h1>
+</div>
+<div class="col-md-12">
+    <ejs-grid id="transactions" dataSource="@Model"
+              allowSorting="true" allowPaging="false" allowFiltering="true"
+              enableInfiniteScrolling="true" gridLines="Vertical">
+        <e-grid-filterSettings type="Menu"></e-grid-filterSettings>
+        <e-grid-columns>
+            <e-grid-column headerText="Image" template="#template" textAlign="Center" width="150"></e-grid-column>
+            <e-grid-column headerText="Full Name" field="FullName"></e-grid-column>
+            <e-grid-column headerText="Position" field="Position"></e-grid-column>
+            <e-grid-column headerText="Salary" field="Salary"
+                           textAlign=Left width="210px"></e-grid-column>
+            <e-grid-column headerText="Start Date" field="StartDate" width="210px"
+                           format="dd-mmm-yy" textAlign=Left></e-grid-column>
+            <e-grid-column headerText="Action" template="#actionColumnTemplate" width="120px"></e-grid-column>
+        </e-grid-columns>
+    </ejs-grid>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Salary)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Position)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FullName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Salary)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Position)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EmployeeId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<script id="actionColumnTemplate" type="text/x-template">
+    <div class="d-flex flex-row justify-content-start ">
+        <a class="btn btn-sm no-a-decoration" href="Employees/Edit/${EmployeeId}">
+            <i class="fa-solid fa-pen  fa-lg"></i>
+        </a>
+        <form action="Employees/Delete/${EmployeeId}" method="post">
+    @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-link btn-sm no-a-decoration"
+        onclick="return confirm(&quot;Are sure to delete this record?&quot;)">
+            <i class="fa-solid fa-trash-can text-danger fa-lg"></i>
+        </button>
+    </form>
+    </div>
+
+</script>
+<script id="template" type="text/x-template">
+    <div class="image">
+        <img src="/media/images/${Image}" alt="${EmployeeImage}" />
+    </div>
+</script>
+
+<style>
+    .image img {
+        height: 55px;
+        width: 55px;
+        border-radius: 50px;
+        box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+</style>
