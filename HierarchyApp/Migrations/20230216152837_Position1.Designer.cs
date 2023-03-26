@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HierarchyApp.Data.Migrations
+namespace HierarchyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230213214853_ImageUpload")]
-    partial class ImageUpload
+    [Migration("20230216152837_Position1")]
+    partial class Position1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,23 @@ namespace HierarchyApp.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("HierarchyApp.Models.CompanyPosition", b =>
+                {
+                    b.Property<int>("CompanyPositionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyPositionId"), 1L, 1);
+
+                    b.Property<string>("PositionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CompanyPositionId");
+
+                    b.ToTable("CompanyPositions");
+                });
+
             modelBuilder.Entity("HierarchyApp.Models.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
@@ -31,6 +48,9 @@ namespace HierarchyApp.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"), 1L, 1);
+
+                    b.Property<int?>("CompanyPositionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -51,6 +71,8 @@ namespace HierarchyApp.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeId");
+
+                    b.HasIndex("CompanyPositionId");
 
                     b.ToTable("Employees");
                 });
@@ -257,6 +279,13 @@ namespace HierarchyApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HierarchyApp.Models.Employee", b =>
+                {
+                    b.HasOne("HierarchyApp.Models.CompanyPosition", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyPositionId");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -306,6 +335,11 @@ namespace HierarchyApp.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HierarchyApp.Models.CompanyPosition", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

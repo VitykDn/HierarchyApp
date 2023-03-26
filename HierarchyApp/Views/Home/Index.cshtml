@@ -1,8 +1,37 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿
+<div class="col-md-12" style="height: 600px">
+    <ejs-treegrid id="TreeGrid" dataSource="@ViewBag.EmployeeData" allowRowDragAndDrop="true"
+                  enableInfiniteScrolling="true" idMapping="EmployeeId" height="100%" allowFiltering="true"
+                  parentIdMapping='BossId' allowPaging="false" treeColumnIndex="1">
+        <e-treegrid-loadingIndicator indicatorType="Spinner"></e-treegrid-loadingIndicator>
+        <e-treegrid-filterSettings type="Menu"></e-treegrid-filterSettings>
+        <e-treegrid-columns>
+                <e-treegrid-column field="EmployeeId" headerText="ID" textAlign="Right" width="50"></e-treegrid-column>
+            <e-treegrid-column field="FullName" headerText="Full Name" width="90"></e-treegrid-column>
+            <e-treegrid-column field="Position" headerText="Position" textAlign="Right" width="80"></e-treegrid-column>
+            <e-treegrid-column field="StartDate" headerText=" Start Date" textAlign="Right"
+                           format="yMd" type="date" width="90"></e-treegrid-column>
+        </e-treegrid-columns>
+    </ejs-treegrid>
+    </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+    @*<script>
+    function onRowDragEnd(args) {
+        var draggedRow = args.data[0];
+        var newParentId = draggedRow.BossId;
+        var draggedRowId = draggedRow.EmployeeId;
+
+        // update the dragged row's BossId in the database
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/Employees/Update', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        var data = JSON.stringify({ 'employeeId': draggedRowId, 'newBossId': newParentId });
+        xhr.send(data);
+    }
+    </script>*@
